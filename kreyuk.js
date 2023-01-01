@@ -1,4 +1,5 @@
-
+  
+	    
 require('./config')
 const { BufferJSON, WA_DEFAULT_EPHEMERAL, generateWAMessageFromContent, proto, generateWAMessageContent, Mimetype, generateWAMessage, prepareWAMessageMedia, prepareMessageFromContent,  areJidsSameUser, getContentType } = require('@adiwajshing/baileys')
 const fs = require('fs')
@@ -10,7 +11,9 @@ const chalk = require('chalk')
 const caliph = require('caliph-api');
 const crypto = require('crypto')
 const dani = require('./lib/null.js')
+
 const { cerpen } = require('./storage/story/cerpen')
+const brainly = require('brainly-scraper')
 const { bioskop, bioskopNow, latinToAksara, aksaraToLatin, gempa, gempaNow, jadwalTV, listJadwalTV, jadwalsholat} = require ('@bochilteam/scraper') 
 
 const yts = require('yt-search')
@@ -33,15 +36,22 @@ const { smsg, formatp, tanggal, formatDate, getTime, isUrl, sleep, clockString, 
 const hasil= ['Done👍','Nih','Sudah jadi','Jadi😉']
 const capha = hasil[Math.floor(Math.random() * hasil.length)]
 
+global.API = (name, path = '/', query = {}, apikeyqueryname) => (name in global.APIs ? global.APIs[name] : name) + path + (query || apikeyqueryname ? '?' + new URLSearchParams(Object.entries({ ...query, ...(apikeyqueryname ? { [apikeyqueryname]: global.APIKeys[name in global.APIs ? global.APIs[name] : name] } : {}) })) : '')
 
-
-
-const hariini = moment.tz('Asia/Jakarta').format('dddd, DD MMMM YYYY')
+const harii = moment.tz('Asia/Jakarta').format('dddd')
+const hariini = moment.tz('Asia/Jakarta').format('DD MMMM YYYY')
 const barat = moment.tz('Asia/Jakarta').format('HH:mm:ss')
 const tengah = moment.tz('Asia/Makassar').format('HH:mm:ss')
 const timur = moment.tz('Asia/Jayapura').format('HH:mm:ss')
-const nyoutube = ('©Masha-Bot')  //ubah di config biar ngk emro
-const kreyukyt = ('*ɴᴏᴛᴇ  :*\n*• ʙᴏᴛ ᴍᴀsɪʜ ᴅᴀʟᴀᴍ ᴛᴀʜᴀᴘ ᴘᴇʀᴋᴇᴍʙᴀɴɢᴀɴ ᴊɪᴋᴀ ᴀᴅᴀ ʙᴜɢ sɪʟᴀʜᴋɴ ʟᴀᴘᴏʀ ᴋᴇ ᴏᴡɴᴇʀ.*')  //ubah di config biar ngk emror
+const nyoutube = ('©Masha-Bot')  
+const kreyukyt = ('*Bot masih dalam pengembangan, jika ada error hubungi owner ya.*')  
+const jam = moment.tz('asia/jakarta').format('HH:mm:ss')
+
+let dt = moment(Date.now()).tz('Asia/Jakarta').locale('id').format('a')
+
+const content = JSON.stringify(m.message)
+const from = m.key.remoteJid
+const time = moment(new Date()).format("HH:mm");
 const ini_mark = `0@s.whatsapp.net`
 
 // database virtex
@@ -172,7 +182,7 @@ return kreyuk.sendMessage(m.chat, { text: teks, mentions: parseMention(teks) }, 
 }
 /////TEKS BUTTON
 const prem1 = `Hai kak  ${pushname} ${ucapanWaktu} \n\nFitur Ini Khusus Member Premium Silahkan Buy Premium Untuk Menggunakan Fitur Ini `
-const prem2 = `Klik tombol di bawah ini untuk membeli premium \n © 𝕯𝖆𝖋𝖋𝖆𝖆𝖆 𝖃𝕯`
+const prem2 = `Klik tombol di bawah ini untuk membeli premium \n © Kreyuk`
 const prem3 = [{buttonId: `${prefix}beliprem`,buttonText: {displayText: `BELI PREMIUM`,},type: 1,},]
 
 blomdaftar = `${ucapanWaktu} @${sender.split("@")[0]} Kamu belum terdaftar di database cek private message mu untuk mendaftar`
@@ -270,11 +280,13 @@ kuis = true
 jawaban = tebakgambar[m.sender.split('@')[0]]
 if (budy.toLowerCase() == jawaban) {
 
-await kreyuk.sendButtonText(m.chat, [{ buttonId: 'tebak gambar', buttonText: { displayText: 'Tebak Gambar' }, type: 1 }], `🎮 Tebak Gambar 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, ` © ${setting.botName} bot`, m)
- 
- delete tebaklagu[m.sender.split('@')[0]]
-} 
-}
+//tebak gambar fix      
+    
+                    kreyuk.sendButtonText(m.chat, [{ buttonId: 'tebak gambar', buttonText: { displayText: 'Tebak Gambar' }, type: 1 }], `🎮 Tebak Gambar 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, kreyuk.user.name, m)
+                    delete tebakkata[m.sender.split('@')[0]]
+                    }
+                }
+
 
         if (kuismath.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
             kuis = true
@@ -665,32 +677,41 @@ break
                 if (!text) throw `Example : ${prefix + command} lagu\n\nOption : \n1. lagu\n2. gambar\n3. kata\n4. kalimat\n5. lirik\n6.lontong`
                 if (args[0] === "lagu") {
                     if (tebaklagu.hasOwnProperty(m.sender.split('@')[0])) throw "Masih Ada Sesi Yang Belum Diselesaikan!"
+                  
                     let anu = await fetchJson('https://fatiharridho.github.io/tebaklagu.json')
                     let result = anu[Math.floor(Math.random() * anu.length)]
                     let msg = await kreyuk.sendMessage(m.chat, { audio: { url: result.link_song }, mimetype: 'audio/mpeg' }, { quoted: m })
                     kreyuk.sendText(m.chat, `Lagu Tersebut Adalah Lagu dari?\n\nArtist : ${result.artist}\nWaktu : 60s`, msg).then(() => {
                     tebaklagu[m.sender.split('@')[0]] = result.jawaban.toLowerCase()
                     })
-                    await sleep(60000)
+                 await sleep(6000)
                     if (tebaklagu.hasOwnProperty(m.sender.split('@')[0])) {
                     console.log("Jawaban: " + result.jawaban)
                     kreyuk.sendButtonText(m.chat, [{ buttonId: 'tebak lagu', buttonText: { displayText: 'Tebak Lagu' }, type: 1 }], `Waktu Habis\nJawaban:  ${tebaklagu[m.sender.split('@')[0]]}\n\nIngin bermain? tekan button dibawah`, kreyuk.user.name, m)
                     delete tebaklagu[m.sender.split('@')[0]]
                     }
                                 } else if (args[0] === 'gambar') {
-                    if (tebakgambar.hasOwnProperty(m.sender.split('@')[0])) throw "Masih Ada Sesi Yang Belum Diselesaikan!"
+                    
+                      let timeout = 60000
                     let anu = await fetchJson('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakgambar.json')
                     let result = anu[Math.floor(Math.random() * anu.length)]
                     kreyuk.sendImage(m.chat, result.img, `Silahkan Jawab Soal Di Atas Ini\n\nDeskripsi : ${result.deskripsi}\nWaktu : 60s`, m).then(() => {
                     tebakgambar[m.sender.split('@')[0]] = result.jawaban.toLowerCase()
-                    })
+                    
+                    
+                    
+                            })
                     await sleep(60000)
                     if (tebakgambar.hasOwnProperty(m.sender.split('@')[0])) {
                     console.log("Jawaban: " + result.jawaban)
                     kreyuk.sendButtonText(m.chat, [{ buttonId: 'tebak gambar', buttonText: { displayText: 'Tebak Gambar' }, type: 1 }], `Waktu Habis\nJawaban:  ${tebakgambar[m.sender.split('@')[0]]}\n\nIngin bermain? tekan button dibawah`, kreyuk.user.name, m)
                     delete tebakgambar[m.sender.split('@')[0]]
                     }
-                } else if (args[0] === 'kata') {
+                    
+                   
+                    
+               
+                } if (args[0] === 'kata') {
                     if (tebakkata.hasOwnProperty(m.sender.split('@')[0])) throw "Masih Ada Sesi Yang Belum Diselesaikan!"
                     let anu = await fetchJson('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkata.json')
                     let result = anu[Math.floor(Math.random() * anu.length)]
@@ -1348,7 +1369,7 @@ let anu = groups.map(v => v.id)
 replay(`Send broadcast to ${anu.length} group chat, time's up ${anu.length * 1.5} second`)
 for (let i of anu) {
 await sleep(1500)
-var button = [{ buttonId: `tesrow`, buttonText: { displayText: `MENU‡` }, type: 1 }, { buttonId: `sewabot`, buttonText: { displayText: `SEWABOT‡` }, type: 1 }]
+var button = [{ buttonId: `tesrow`, buttonText: { displayText: `MENU` }, type: 1 }, { buttonId: `sewabot`, buttonText: { displayText: `SEWABOT` }, type: 1 }]
 let txt = `* ${global.ownername}'s Broadcast」*\n\n${text}`
 kreyuk.send5ButImg(i, txt, `Masha-Bot`, log0, btn, thum)
 }
@@ -1387,7 +1408,7 @@ kreyuk.sendMessage(yoi, { audio: { url: urll.url }}, { quoted: fdoc })
 } else {
 await sleep(1500)
 var txtbc = `*Broadcast *\n\n*✉️ Message :* ${q? q : ''}\n`
-var btnbc = [{ buttonId: `owner`, buttonText: { displayText: `OWNER‡` }, type: 1 }]
+var btnbc = [{ buttonId: `owner`, buttonText: { displayText: `OWNER` }, type: 1 }]
 await kreyuk.sendButtonText(yoi, btnbc, txtbc, '', fdoc)
 }
 m.reply('Sukses Broadcast')
@@ -1411,7 +1432,7 @@ if (!isCreator) return replay(mess.owner)
                 m.reply(`*Send Broadcast To* ${anu.length} Chat\nTime ${anu.length * 1.5} sec`)
 	     	for (let yoi of anu) {
 	     	await sleep(1500)
-		    var button = [{ buttonId: `owner`, buttonText: { displayText: `OWNER‡` }, type: 1 }, { buttonId: `DONASI`, buttonText: { displayText: `DONASI‡` }, type: 1 }]             
+		    var button = [{ buttonId: `owner`, buttonText: { displayText: `OWNER` }, type: 1 }, { buttonId: `DONASI`, buttonText: { displayText: `DONASI` }, type: 1 }]             
             kreyuk.sendMessage(yoi, { caption: `${melo}`, location: { jpegThumbnail: await reSize(buffer, 200, 200) }, buttons: button, footer: `Masha-Bot`, mentions: [m.sender] })
 		}		
             }
@@ -1448,6 +1469,8 @@ if (!isCreator) return replay(mess.owner)
                     let online = [...Object.keys(store.presences[id]), botNumber]
                     kreyuk.sendText(m.chat, 'List Online:\n\n' + online.map(v => '• @' + v.replace(/@.+/, '')).join`\n`, m, { mentions: online })
              }
+             
+
              break
             case 'sticker': case 's': case 'stickergif': case 'sgif': {
             if (!quoted) throw `*Balas Video/Image Dengan Caption* ${prefix + command}`
@@ -1485,7 +1508,7 @@ m.reply(`Chat Owner Kak Silahkan Ketik .owner`)
 break
   case 'addprem':
 if (!isCreator) throw mess.owner
-if (!q) return m.reply(`Masukan Nomornya contoh: \n${prefix}${command} 628586826398`)
+if (!q) return m.reply(`Masukan Nomornya contoh: \n${prefix}${command} 6285704424543`)
 if(isNaN(q)) return await m.reply('harus berupa nomor')
   if (q.includes(`+`)) return m.reply('Tidak menggunakan + langsung nomor 6285****')
 prmi = args.join(" ")
@@ -1496,7 +1519,7 @@ break
 case 'delprem':
  case 'dellprem':
 if (!isCreator) throw mess.owner
-  if (!q) return m.reply(`Masukan Nomornya contoh: \n${prefix}${command} 628586826398`)
+  if (!q) return m.reply(`Masukan Nomornya contoh: \n${prefix}${command} 6285704424543`)
   if(isNaN(q)) return await m.reply('harus berupa nomor')
   if (q.includes(`+`)) return m.reply('Tidak menggunakan + langsung nomor 6285****')
   prmin = `${q}@s.whatsapp.net`
@@ -1541,11 +1564,31 @@ break
 	        await fs.unlinkSync(awikwok)
             }
 	       break     
+	       case 'removebg': {
+	     
+
+	let q = m.quoted ? m.quoted : m,
+		mime = (q.msg || q).mimetype || q.mediaType || ''
+	if (/image/g.test(mime)) {
+		
+		let	url = API('violetics', '/api/media/removebg',  'apikey')
+		kreyuk.sendMessage(m.chat, { image: { url }}, { quoted: m })
+	} else throw `Send/reply an image with command ${prefix + command}`
+
+	       
+	       
+	       
+	       }
+	       
+	       break
 	        case 'simih': case 'simisimi': {
             if (!text) throw `Example : ${prefix + command} text`
-            hm = await fetchJson(api('zenz', '/api/simisimi', { text : text }, 'f22b3c4c2c'))
-            m.reply(hm.result.message)
-            }
+   let res = await fetch(global.API('https://api.simsimi.net', '/v2/', { text: encodeURIComponent(text), lc: "id" }, ''))
+  let json = await res.json()
+  if (json.success) m.reply(json.success)
+  else throw json
+
+}
             break
             case 'toimage': case 'toimg': {
                 if (!quoted) throw 'Reply Image'
@@ -1759,7 +1802,7 @@ break
 
 
   case 'gimage': {
- 
+ 	if (!text) throw `Example : ${prefix + command} query`
 m.reply(mess.wait)
 let gis = require('g-i-s')
 gis(text, async (error, result) => {
@@ -1783,12 +1826,32 @@ kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })
            break
 
             case 'pinterest': {
-                m.reply(mess.wait)
+               
+          
+             
+             
+             
+            	if (!text) throw `Example : ${prefix + command} text`
+m.reply(mess.wait)         
+         
 		let { pinterest } = require('./lib/scraper')
-                anu = await pinterest(text)
+                
+anu = await pinterest(text)
                 result = anu[Math.floor(Math.random() * anu.length)]
-                kreyuk.sendMessage(m.chat, { image: { url: result }, caption: '• Media Url : '+result }, { quoted: m })
-            }
+let buttons = [
+    {buttonId: `.pinterest ${text}`, buttonText: {displayText: 'Next Image'}, type: 1}
+]
+let buttonMessage = {
+    image: { url: result },
+    caption: `* PINTEREST SEARCH 」*
+ *Query* : ${text}
+ *Media Url* : ${result}`,
+    footer: ` © ${setting.botName} bot`,
+    buttons: buttons,
+    headerType: 4
+}
+kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })}
+            
             break
 //Hosting Menu
 case 'createcp':
@@ -1892,34 +1955,17 @@ break
                 kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })
             }
             break
-            case 'wallpaper': {
-                if (!text) throw 'Masukkan Query Title'
-		let { wallpaper } = require('./lib/scraper')
-                anu = await wallpaper(text)
-                result = anu[Math.floor(Math.random() * anu.length)]
-		let buttons = [
-                    {buttonId: `wallpaper ${text}`, buttonText: {displayText: 'Next Image'}, type: 1}
-                ]
-                let buttonMessage = {
-                    image: { url: result.image[0] },
-                    caption: `• Title : ${result.title}\n• Category : ${result.type}\n• Detail : ${result.source}\n• Media Url : ${result.image[2] || result.image[1] || result.image[0]}`,
-                    footer: nyoutube,
-                    buttons: buttons,
-                    headerType: 4
-                }
-                kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })
-            }
-            break
-case 'brainly':
+
+case 'brainly':{
+  
 					if (args.length < 1) return reply('Pertanyaan apa')
-		          	brien = args.join(' ')
-					brainly(`${brien}`).then(res => {
-					teks = '❉───────────────────────❉\n'
-					for (let Y of res.data) {
-					teks += `\n* _BRAINLY_ 」*\n\n*➸ Pertanyaan:* ${Y.pertanyaan}\n\n*➸ Jawaban:* ${Y.jawaban[0].text}\n❉──────────────────❉\n`
-					}
-					kreyuk.sendMessage(m.chat, teks, text,{quoted:m,detectLinks: false})                        
-		            })              
+		  let brainly = require("brainly-scraper")
+
+let res = await brainly(text)
+let answer = res.data.map((v, i) => `_*PERTANYAAN KE ${i + 1}*_\n${v.pertanyaan}\n${v.jawaban.map((v,i) => `*JAWABAN KE ${i + 1}*\n${v.text}`).join('\n')}`).join('\n\n•------------•\n\n')
+m.reply(answer)
+}
+         
 					break
 case 'tts': {
          	if (!text) throw `Example : ${prefix + command} text`
@@ -1933,7 +1979,7 @@ case 'tts': {
                 n = anu.result
                 result = n[Math.floor(Math.random() * n.length)]
                 let jwbn = `*Nama : ${result.nama}\n*Link : ${result.link}*`
-let buttons = [{ buttonId: `tesrow`, buttonText: {displayText: 'BACK‡'}, type: 1},{buttonId: `donasi`, buttonText: {displayText: 'DONASI‡'}, type: 1}]
+let buttons = [{ buttonId: `tesrow`, buttonText: {displayText: 'BACK'}, type: 1},{buttonId: `donasi`, buttonText: {displayText: 'DONASI'}, type: 1}]
             await kreyuk.sendButtonText(m.chat, buttons, jwbn, nyoutube, m)
             }
             break
@@ -2007,19 +2053,25 @@ break
             }
             break
             case 'quotes': {
-var Quotes = JSON.parse(fs.readFileSync('./storage/quotes/quotes.json'))
-var hasil = pickRandom(Quotes)
-let buttons = [
-{buttonId: `${command}`, buttonText: {displayText: '⬡ BACK'}, type: 1}
-]
-let buttonMessage = {
-text: `${hasil}`,
-footer: mess.watermark,
-buttons: buttons,
-headerType: 2
-}
-kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })
-}
+            
+            let quotes = JSON.parse(fs.readFileSync('./storage/quotes/quotes.json'))
+            	
+                let anu = await quotes
+                result = anu[Math.floor(Math.random() * anu.length)]
+                let buttons = [
+                    {buttonId: `quotes`, buttonText: {displayText: 'Next'}, type: 1}
+                ]
+                let buttonMessage = {
+                    text: `~_${result.quotes}_\n\nBy ${result.author} `,
+                    footer: mess.watermark,
+                    buttons: buttons,
+                    headerType: 2
+                }
+                kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })
+            }
+            
+            
+
 break
 case 'quotesjawa': {
 var jawa = JSON.parse(fs.readFileSync('./storage/quotes/quotesjawa.json'))
@@ -2142,19 +2194,32 @@ kreyuk.sendMessage(m.chat, buttonMessage, { quoted: m })
 }
 
             break
+case 'pencil': case 'glitch': case'glitch2': case 'glitchtiktok': case 'berry': case 'blackpink': case 'logobear': case '3dchristmas': case 'thunder': case '3dbox': case 'video-game-classic': case 'marvel-studios': case 'ninja-logo': case 'green-horror': case 'magma': case '3d-neon-light': case '3d-orange-juice': case 'chocolate-cake': case '3dcrackedstone': case 'strawberry': {
+	
+
+                if (!q) throw `Example : ${prefix + command} text`
+                reply(mess.wait)
+                kreyuk.sendMessage(m.chat, { image: { url: `https://danzzapi.xyz/api/textpro/${command}?text=${q}&apikey=danzz` }, caption: `Done` }, { quoted: m })
+	    }
+break
             
                         case 'candy': case 'christmas': case 'sparklechristmas': case 'holographic':
 case 'deepsea': case 'blackpink': case 'scifi': case 'rainbow': case 'waterpipe': case 'spooky': case 'karbon': case 'colorneon': case 'circuit': case 'discovery': case 'metalic': case 'fiction': case 'demon': case '3dbox': 
 case 'transformer': case '3dstone': case 'greenneon': 
-case 'neonlight': case 'harrypotter': case 'brokenglass': case 'papercut': case 'lion2': 
+case 'neonlight': case 'brokenglass': case 'papercut':
 case 'watercolor': case 'multicolor': case 'neondevil': case'strawberry': case 'underwater': case 'graffitibike': case '3davengers': 
  case 'snow': case 'cloud': case 'honey': case 'ice': case 'fruitjuice': case 'biscuit': case 'wood': case 'whitebear': 
 case 'chocolate': case 'matrix': case 'blood': case 'dropwater': case 'toxic': 
-case 'lava': case 'rock': case 'bloodglas': case 'hallowen': case 'darkgold': case 'joker': case 'wicker':
- case 'firework': case 'skeleton': case 'sand': case 'glue': case '1917': case 'leaves': {
-             if (!q) return m.reply(`Example : ${prefix + command} kreyuk`) 
+case 'lava': case 'rock': case 'bloodglas': case 'hallowen': case 'darkgold': case 'joker': case 'wicker': case 'neon':
+ case 'firework': case 'skeleton': case 'sand': case 'glue': case '1917': case 'leaves': case 'storm': {
+             if (!text) return m.reply(`Example : ${prefix + command} kreyuk`) 
              m.reply(mess.wait)
              let link
+
+if (/neon/.test(command))
+link = 'https://textpro.me/neon-text-effect-online-879.html'
+if (/storm/.test(command))
+link = 'https://textpro.me/create-thunder-text-effect-online-881.html'
              if (/candy/.test(command)) link = 'https://textpro.me/create-christmas-candy-cane-text-effect-1056.html'
              if (/colorneon/.test(command)) link = 'https://textpro.me/neon-light-text-effect-with-galaxy-style-981.html'
              if (/christmas/.test(command)) link = 'https://textpro.me/christmas-tree-text-effect-online-free-1057.html'
@@ -2169,7 +2234,7 @@ case 'lava': case 'rock': case 'bloodglas': case 'hallowen': case 'darkgold': ca
              if (/waterpipe/.test(command)) link = 'https://textpro.me/create-3d-water-pipe-text-effects-online-1048.html'
              if (/spooky/.test(command)) link = 'https://textpro.me/create-halloween-skeleton-text-effect-online-1047.html'
              if (/greenneon/.test(command)) link = 'https://textpro.me/green-neon-text-effect-874.html'
-             if (/lion2/.test(command)) link = 'https://textpro.me/create-lion-logo-mascot-online-938.html'
+            
              if (/3dbox/.test(command)) link = 'https://textpro.me/3d-box-text-effect-online-880.html'
              if (/pencil/.test(command)) link = 'https://textpro.me/create-a-sketch-text-effect-online-1044.html'
              if (/circuit/.test(command)) link = 'https://textpro.me/create-blue-circuit-style-text-effect-online-1043.html'
@@ -2184,7 +2249,7 @@ case 'lava': case 'rock': case 'bloodglas': case 'hallowen': case 'darkgold': ca
              if (/3dstone/.test(command)) link = 'https://textpro.me/3d-stone-cracked-cool-text-effect-1029.html'
              if (/neonlight/.test(command)) link = 'https://textpro.me/create-3d-neon-light-text-effect-online-1028.html'
              if (/glitch/.test(command)) link = 'https://textpro.me/create-impressive-glitch-text-effects-online-1027.html'
-             if (/harrypotter/.test(command)) link = 'https://textpro.me/create-harry-potter-text-effect-online-1025.html'
+          
              if (/brokenglass/.test(command)) link = 'https://textpro.me/broken-glass-text-effect-free-online-1023.html'
              if (/papercut/.test(command)) link = 'https://textpro.me/create-art-paper-cut-text-effect-online-1022.html'
              if (/watercolor/.test(command)) link = 'https://textpro.me/create-a-free-online-watercolor-text-effect-1017.html'
@@ -2224,14 +2289,14 @@ case 'lava': case 'rock': case 'bloodglas': case 'hallowen': case 'darkgold': ca
              kreyuk.sendMessage(m.chat, { image: { url: anu }, caption: `${capha}`}, { quoted: m })
              }
              break
-             case 'glitch2': case 'harrypot': case 'graffiti': case 'pornhub': case 'glitch3': case '3dspace': case 'lion': case 'wolf': case 'retro': case '8bit': {
+             case 'glitch2': case 'graffiti': case 'pornhub': case 'glitch3': case '3dspace': case 'lion': case 'wolf': case 'retro': case '8bit': {
              if(!q) return m.reply(`Use ${prefix + command} text1|text2`)
              m.reply(mess.wait)
              teks1 = q.split("|")[0]
              teks2 = q.split("|")[1]
              let link
              if (/glitch3/.test(command)) link = 'https://textpro.me/create-glitch-text-effect-style-tik-tok-983.html'
-             if (/harrypot/.test(command)) link = 'https://textpro.me/create-harry-potter-text-effect-online-1025.html'
+           
              if (/graffiti/.test(command)) link = 'https://textpro.me/create-a-cool-graffiti-text-on-the-wall-1010.html'
              if (/pornhub/.test(command)) link = 'https://textpro.me/pornhub-style-logo-online-generator-free-977.html'
              if (/glitch2/.test(command)) link = 'https://textpro.me/create-a-glitch-text-effect-online-free-1026.html'
@@ -2244,14 +2309,13 @@ case 'lava': case 'rock': case 'bloodglas': case 'hallowen': case 'darkgold': ca
              kreyuk.sendMessage(m.chat, { image: { url: anu }, caption: `Nih` }, { quoted: m })
              }
              break
-//━━━━━━━━━━━━━━━[ BATAS ]━━━━━━━━━━━━━━━━━//
-//INI FITUR Photooxy YA ADICK"//
-case 'carved-wood': case 'picture-of-love': case 'naruto': case 'butterfly': case 'illuminated-metallic': case 'flower-typography': case 'sweet-candy': case 'coffee-cup': case 'under-grass': case 'night-sky': case 'harry-potter': case 'metallic': case 'shadow': {
-                if (!text) throw 'No Query Text'
-                m.reply(mess.wait)
-                kreyuk.sendMessage(m.chat, { image: { url: `https://saipulanuar.ga/api/photooxy/${command}?text=${text}` }, caption: `textpro ${command}` }, { quoted: m })
-            }
-      
+ break
+case 'shadow':case 'cup':case 'cup1':case 'romance':case 'smoke':case 'burnpaper':case 'lovemessage':case 'undergrass':case 'love':case 'coffe':case 'woodheart':case 'woodenboard':case 'summer3d':case 'wolfmetal':case 'nature3d':case 'underwater':case 'goldenrose':case 'summernature':case 'letterleaves':case 'glowingneon':case 'fallleaves':case 'flamming':case 'harrypotter':case 'carvedwood':{
+
+if (!q) reply(`Contoh: #${command} nama`)
+reply(mess.wait)
+kreyuk.sendMessage(m.chat, { image: { url: `https://api.lolhuman.xyz/api/photooxy1/${command}?apikey=${setting.api_lolkey}&text=${q}`}, caption: `Nih ${command}📸` }, { quoted: m })
+}
             break
 
 case 'tiktok]':{ 
@@ -2259,8 +2323,8 @@ if (!text) return m.reply( `Example : ${prefix + command} link`)
 if (!q.includes('tiktok')) return m.reply(`Link Invalid!!`)
 reply(mess.wait)
 require('./lib/tiktok').Tiktok(q).then( data => {
-    var button = [{ buttonId: `tiktokaudio`, buttonText: { displayText: `AUDIO‡` }, type: 1 }, { buttonId: `owner`, buttonText: { displayText: `OWNER‡` }, type: 1 }]
-kreyuk.sendMessage(m.chat, { caption: 'Tu Video Nya | by Masha-Bot', video: { url: data.watermark }, buttons: button, footer: `© 𝕯𝖆𝖋𝖋𝖆𝖆𝖆 𝖃𝕯‡`, mentions: [sender] })
+    var button = [{ buttonId: `tiktokaudio`, buttonText: { displayText: `AUDIO` }, type: 1 }, { buttonId: `owner`, buttonText: { displayText: `OWNER` }, type: 1 }]
+kreyuk.sendMessage(m.chat, { caption: 'Tu Video Nya | by Masha-Bot', video: { url: data.watermark }, buttons: button, footer: `© 𝕯𝖆𝖋𝖋𝖆𝖆𝖆 𝖃𝕯`, mentions: [sender] })
 })
 }
 break
@@ -2272,65 +2336,7 @@ require('./lib/tiktok').Tiktok(q).then( data => {
 kreyuk.sendMessage(m.chat, { audio: { url: data.audio }, mimetype: 'audio/mp4' }, { quoted: m })
 })
 }
-break
-//BATAS NYA DECK//
-//━━━━━━━━━━━━━━━[ WEBZONE ]━━━━━━━━━━━━━━━━━//
-//━━━━━━━━━━━━━━━[ RANDOM ASUPAN ]━━━━━━━━━━━━━━━━━//
-case 'asupan':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var asupan = JSON.parse(fs.readFileSync('./storage/asupan/asupan.json'))
-var hasil = pickRandom(asupan)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupanghea':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var gheayubi = JSON.parse(fs.readFileSync('./storage/asupan/gheayubi.json'))
-var hasil = pickRandom(gheayubi)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupanbocil':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var bocil = JSON.parse(fs.readFileSync('./storage/asupan/bocil.json'))
-var hasil = pickRandom(bocil)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupanukhty':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var ukhty = JSON.parse(fs.readFileSync('./storage/asupan/ukhty.json'))
-var hasil = pickRandom(ukhty)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupansantuy':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var santuy = JSON.parse(fs.readFileSync('./storage/asupan/santuy.json'))
-var hasil = pickRandom(santuy)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupankayes':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var kayes = JSON.parse(fs.readFileSync('./storage/asupan/kayes.json'))
-var hasil = pickRandom(kayes)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupanrika':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var rikagusriani = JSON.parse(fs.readFileSync('./storage/asupan/rikagusriani.json'))
-var hasil = pickRandom(rikagusriani)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
-break
-case 'asupannotnot':
-m.reply(mess.wait)
-var but = [{buttonId: `${command}`, buttonText: { displayText: "NEXT➡️" }, type: 1 }]
-var notnot = JSON.parse(fs.readFileSync('./storage/asupan/asupannotnot.json'))
-var hasil = pickRandom(notnot)
-kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, buttons: but, footer: mess.watermark }, { quoted: m })
+
 break
 case 'storyanime':
 m.reply(mess.wait)
@@ -2341,7 +2347,7 @@ kreyuk.sendMessage(m.chat, { caption: mess.success, video: { url: hasil.url }, b
 break
 //━━━━━━━━━━━━━━━[ BATAS ]━━━━━━━━━━━━━━━━━//
          case 'nomerhoki': case 'nomorhoki': {
-                if (!Number(text)) throw `Example : ${prefix + command} 6285822347348`
+                if (!Number(text)) throw `Example : ${prefix + command} 6285704424543`
                 let anu = await primbon.nomer_hoki(Number(text))
                 if (anu.status == false) return m.reply(anu.message)
                 kreyuk.sendText(m.chat, `• *Nomor HP :* ${anu.message.nomer_hp}\n• *Angka Shuzi :* ${anu.message.angka_shuzi}\n• *Energi Positif :*\n- Kekayaan : ${anu.message.energi_positif.kekayaan}\n- Kesehatan : ${anu.message.energi_positif.kesehatan}\n- Cinta : ${anu.message.energi_positif.cinta}\n- Kestabilan : ${anu.message.energi_positif.kestabilan}\n- Persentase : ${anu.message.energi_positif.persentase}\n• *Energi Negatif :*\n- Perselisihan : ${anu.message.energi_negatif.perselisihan}\n- Kehilangan : ${anu.message.energi_negatif.kehilangan}\n- Malapetaka : ${anu.message.energi_negatif.malapetaka}\n- Kehancuran : ${anu.message.energi_negatif.kehancuran}\n- Persentase : ${anu.message.energi_negatif.persentase}`, m)
@@ -2387,7 +2393,7 @@ break
             }
             break
             case 'artinama': {
-                if (!text) throw `Example : ${prefix + command} Dika Ardianta`
+                if (!text) throw `Example : ${prefix + command} masha`
                 let anu = await primbon.arti_nama(text)
                 if (anu.status == false) return m.reply(anu.message)
                 kreyuk.sendText(m.chat, `• *Nama :* ${anu.message.nama}\n• *Arti :* ${anu.message.arti}\n• *Catatan :* ${anu.message.catatan}`, m)
@@ -2704,14 +2710,7 @@ break
                 let anu = await fetchJson(api('zenz', '/api/downloader/facebook', { url: text }, 'f22b3c4c2c'))
                 kreyuk.sendMessage(m.chat, { video: { url: anu.result.url }, caption: `• Title : ${anu.result.title}`}, { quoted: m })
             }
-            break
-	        case 'pinterest': {
-m.reply(mess.wait)
-let { pinterest } = require('./lib/scraper')
-anu = await pinterest(text)
-result = anu[Math.floor(Math.random() * anu.length)]
-kreyuk.sendMessage(m.chat, { image: { url: result }, caption: '⭔ Media Url : '+result }, { quoted: m })
-}
+           
 break
             case 'umma': case 'ummadl': {
 	        if (!text) throw `Example : ${prefix + command} https://umma.id/channel/video/post/gus-arafat-sumber-kecewa-84464612933698`
@@ -3502,7 +3501,7 @@ Lihat list Pesan Dengan ${prefix}listmsg`)
 // INI FITUR STORE GAME YA JING //
 case 'proses': {
 min = `• ᴋɪʀɪᴍ ɪᴅ ᴀᴋᴜɴ ᴋᴀʟɪᴀɴ ᴅᴇɴɢᴀɴ ᴄᴀʀᴀ ᴋʟɪᴋ ʙᴜᴛᴛᴏɴ sᴇɴᴅ ɪᴅ\n\n•ᴜɴᴛᴜᴋ ᴘᴇᴍʙᴀʏᴀʀᴀɴ sɪʟᴀʜᴋᴀɴ ᴋʟɪᴋ ʙᴜᴛᴛᴏɴ ʙᴀʏᴀʀ\n\nTerima Kasih.`
-let buttons = [{ buttonId: `owner`, buttonText: {displayText: 'sᴇɴᴅ ɪᴅ‡'}, type: 1},{buttonId: `bayar`, buttonText: {displayText: 'ʙᴀʏᴀʀ‡'}, type: 1}]
+let buttons = [{ buttonId: `owner`, buttonText: {displayText: 'sᴇɴᴅ ɪᴅ'}, type: 1},{buttonId: `bayar`, buttonText: {displayText: 'ʙᴀʏᴀʀ'}, type: 1}]
             await kreyuk.sendButtonText(m.chat, buttons, min, nyoutube, m)
             }
             break
@@ -3592,7 +3591,7 @@ break
 				header = 'hayyy'
 					gambar = `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMkjAJhYezm4h6k1AJ6qfreGkaRdBcR7UHMw&usqp=CAU`
 
-				 var button = [{ buttonId: `menfesconfirm`, buttonText: { displayText: `CONFIRM‡` }, type: 1 }, { buttonId: `sewabot`, buttonText: { displayText: `SEWABOT‡` }, type: 1 }]
+				 var button = [{ buttonId: `menfesconfirm`, buttonText: { displayText: `CONFIRM` }, type: 1 }, { buttonId: `sewabot`, buttonText: { displayText: `SEWABOT` }, type: 1 }]
 					kreyuk.sendMessage(`${nomor}@s.whatsapp.net`, { caption: teksnya, image: {url: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMkjAJhYezm4h6k1AJ6qfreGkaRdBcR7UHMw&usqp=CAU`}, buttons: button, footer: `Masha-Bot\nLink Channel YouTube\nhttps://youtube.com/@rismamylove` })
 				m.reply(`Sukses Mengirim Menfess!!`)
 				break
@@ -3827,31 +3826,7 @@ ${cpus.map((cpu, i) => `${i + 1}. ${cpu.model.trim()} (${cpu.speed} MHZ)\n${Obje
                 }
             }
             break
-            case 'sponsor': {
-            if (!m.isGroup) throw mess.group
-            let qontak = `6285718971848@s.whatsapp.net`
-let dana = `6281911500445@s.whatsapp.net`
-let shopeeotp = `6285574670796@s.whatsapp.net`
-let shopee = `622150996855@s.whatsapp.net`
-let tokopedia = `6281197911081@s.whatsapp.net`
-let smartfrend = `628881212888@s.whatsapp.net`
-let getcontact = `447990653714@s.whatsapp.net`
-let facebook = `447710173736@s.whatsapp.net`
-let pasarpolis = `6287700178000@s.whatsapp.net`
-let kominfo = `628119224545@s.whatsapp.net`
-let alfamart = `628111500959@s.whatsapp.net`
-            let ownernya = ownernomer + '@s.whatsapp.net'
-            let me = m.sender
-            let jawab = `*Bot by Kreyuk* 
--Creator :  @${ownernya.split('@')[0]}\n-Lu : @${me.split('@')[0]}\n-Powered  : @${ini_mark.split('@')[0]}\n- :  @${qontak.split('@')[0]}\n- :  @${dana.split('@')[0]}\n- :  @${shopeeotp.split('@')[0]}\n- :  @${shopee.split('@')[0]}\n- :  @${tokopedia.split('@')[0]}\n- :  @${smartfrend.split('@')[0]}\n- :  @${getcontact.split('@')[0]}\n- :  @${facebook.split('@')[0]}\n- :  @${pasarpolis.split('@')[0]}\n- :  @${getcontact.split('@')[0]}\n- :  @${kominfo.split('@')[0]}\n- :  @${alfamart.split('@')[0]}`
-            let ments = [ownernya, me, ini_mark, qontak, dana, shopeeotp, shopee, tokopedia, smartfrend, getcontact, facebook, pasarpolis, kominfo, alfamart]
-            let buttons = [
-                        { buttonId: 'tesrow', buttonText: { displayText: '📖List Menu' }, type: 1 }
-                    ]
-                    await kreyuk.sendButtonText(m.chat, buttons, jawab, kreyuk.user.name, m, {mentions: ments})
-            }
-            break
-//INI FITUR REQUEST YA ADICK"//
+           
 case 'req': case 'request': {
             	if (!text) throw `Example : ${prefix + command} Fitur Min`
                let ownernya = ownernomer + '@s.whatsapp.net'
@@ -3956,25 +3931,22 @@ const reSize = (buffer, ukur1, ukur2) => {
 }
 buffer = 'https://telegra.ph/file/62eb5c4d0c997aeabd7ce.jpg'
   	anu = `
-*⚠️ sʏᴀʀᴀᴛ ᴅᴀɴ ᴋᴇᴛᴇɴᴛᴜᴀɴ ⚠️*
+*⚠️ Aturan Pemakaian Masha-Bot ⚠️*
 
-*1. ᴘᴇɴɢɢᴜɴᴀ ᴅᴀᴘᴀᴛ ᴍᴇɴɢɢᴜɴᴀᴋᴀɴ sᴇᴍᴜᴀ ᴘᴇʀɪɴᴛᴀʜ ᴅᴀɴ ᴛɪᴅᴀᴋ ᴍᴇʟᴀᴋᴜᴋᴀɴ sᴘᴀᴍ ᴛᴇʀʜᴀᴅᴀᴘ ʙᴏᴛ.*
-*2. ᴅɪʟᴀʀᴀɴɢ ᴋᴇʀᴀs ᴍᴇɴɢɪʀɪᴍ ᴠɪʀᴛᴇx ᴅᴀɴ sᴇᴍᴀᴄᴀᴍɴʏᴀ ʏᴀɴɢ ᴍᴇᴍʙᴜᴀᴛ sᴇʀᴠᴇʀ ᴅᴏᴡɴ ᴀᴛᴀᴜᴘᴜɴ ʙᴏᴛ ᴄʀᴀsʜ.*
-*3. ᴘᴇɴɢɢᴜɴᴀ ʏᴀɴɢ ᴍᴇɴɢɪʀɪᴍ ʜᴀʟ ᴀᴛᴀᴜ ᴅᴀᴛᴀ ᴘʀɪʙᴀᴅɪ ᴛɪᴅᴀᴋ ᴀᴋᴀɴ ᴅɪsɪᴍᴘᴀɴ ᴏʟᴇʜ ʙᴏᴛ ɪɴɪ, ᴅᴀɴ ᴛɪᴅᴀᴋ ᴀᴋᴀɴ ʙᴇʀᴛᴀɴɢɢᴜɴɢ ᴊᴀᴡᴀʙ ᴀᴛᴀs ᴅᴀᴛᴀ ᴘʀɪʙᴀᴅɪ ᴛᴇʀsᴇʙᴜᴛ!*
-*4. ᴋᴀᴍɪ ᴛɪᴅᴀᴋ ᴘᴇʀɴᴀʜ ᴍᴇᴍɪɴᴛᴀ ᴀɴᴅᴀ ᴜɴᴛᴜᴋ ᴍᴇᴍʙᴇʀɪᴋᴀɴ ɪɴғᴏʀᴍᴀsɪ ᴘʀɪʙᴀᴅɪ.*
+*1. Pengguna bisa menggunakan semua perintah yang tersedia, terbatas nggaknya menu tergantung owner.*
+*2. Dilarang mengirimkan virtex yang membuat hp lemot.*
+*3. Semua kelalaian pengguna bot tidak ditanggung owner maupun botnya*
+*4. Jangan memberikan informasi pribadi apapun yang sensitif karena kami tak akan bertanggung jawab atas suatu hal yang terjadi dengan apa yang kalian kirim ke Masha-bot.*
 
-*❗ ʀᴜʟᴇs ❗*
-1. ᴊᴀɴɢᴀɴ sᴘᴀᴍ ʙᴏᴛ.
-sᴀɴᴋsɪ : ᴡᴀʀɴ/sᴏғᴛ ʙʟᴏᴄᴋ
+*❗ Rules❗*
+1. Menyepam bot akan di blockir
 
-2. ᴊᴀɴɢᴀɴ ᴛᴇʟᴇᴘᴏɴ ʙᴏᴛ.
-sᴀɴᴋsɪ : sᴏғᴛ ʙʟᴏᴄᴋ
+2. Menelepon bot akan di block
 
-3. ᴊᴀɴɢᴀɴ ᴍᴇɴɢᴇᴋsᴘʟᴏɪᴛᴀsɪ ʙᴏᴛ.
-sᴀɴᴋsɪ : ᴘᴇʀᴍᴀɴᴇɴᴛ ʙʟᴏᴄᴋ
+3. Mengeksploitasi bot block permanen
 ___________________
-ɴᴏᴛᴇ : ʙᴏᴛ ɪɴɪ ᴍᴇɴɢɢᴜɴᴀᴋᴀɴ ᴀᴜᴛᴏʀᴇᴀᴅ ᴀᴛᴀᴜ ʟᴀɴɢsᴜɴɢ ᴍᴇᴍʙᴀᴄᴀ ᴘᴇsᴀɴ ʏᴀɴɢ ᴘᴇɴɢɢᴜɴᴀ ᴋɪʀɪᴍ.`
-    var button = [{ buttonId: `sewabot`, buttonText: { displayText: `SEWABOT‡` }, type: 1 }, { buttonId: `DONASI`, buttonText: { displayText: `DONASI‡` }, type: 1 }]
+Note : Have fun.`
+    var button = [{ buttonId: `sewabot`, buttonText: { displayText: `SEWABOT` }, type: 1 }, { buttonId: `DONASI`, buttonText: { displayText: `DONASI` }, type: 1 }]
 kreyuk.sendMessage(m.chat, { caption: `${anu}`, location: { jpegThumbnail: await reSize(buffer, 200, 200) }, buttons: button, footer:  mess.watermark, mentions: [m.sender] })
 }
 
@@ -3984,8 +3956,8 @@ break
 case 'donasi': case 'donate': case 'donasi': case 'donasi': {
                 kreyuk.sendMessage(m.chat, { image: { url: 'https://vcgamers.com/news/wp-content/uploads/2021/12/Masha-oke.png' }, caption: `*Hi ${m.pushName}*\n*Kamu bisa berdonasi lewat*
 
-- Dana : 085876596372
-- OVO : 085876596372
+- Dana : 085704424543
+- OVO : 085704424543
 
 *_Terima Kasih Kepada Yang Sudah Donasi_*\n` }, { quoted: m })
             }
@@ -4033,306 +4005,354 @@ m.reply(storee)
             }
 }
 break
+case 'textmenu': { 
+if (!text) throw `
 
+
+╭────✎「 *Text Pro Menu* 」
+│• #3dbox
+│• #3ddeepsea
+│• #drapwater
+│• #americanflag
+│• #papercut
+│• #transformer
+│• #herryp
+│• #neondevil
+│• #3dstone
+│• #3davengers
+│• #window
+│• #graffiti
+│• #pornhub
+│• #blackping
+│• #glitch
+│• #glitch2
+│• #glitch3
+│• #3dspace
+│• #lion
+│• #3dneon
+│• #neon
+│• #greenneon
+│• #bokeh
+│• #hollographic
+│• #bear
+│• #wolf
+│• #joker
+│• #dropwater
+│• #neonlight
+│• #natural
+│• #carbon
+│• #pencil
+│• #candy
+│• #christmas
+│• #3dchristmas
+│• #sparklechristmas
+│• #deepsea
+│• #scifi
+│• #rainbow
+│• #waterpipe
+│• #spooky
+│• #circuit
+│• #discovery
+│• #metalic
+│• #fiction
+│• #demon
+│• #berry
+│• #thunder
+│• #storm
+│• #magma
+│• #glitch
+│• #harrypotter
+│• #brokenglass
+│• #papercut
+│• #watercolor
+│• #multicolor
+│• #neondevil
+│• #underwater
+│• #graffitibike
+│• #snow
+│• #cloud
+│• #honey
+│• #ice
+│• #fruitjuice
+│• #biscuit
+│• #wood
+│• #chocolate
+│• #strawberry
+│• #matrix
+│• #blood
+│• #toxic
+│• #lava
+│• #rock
+│• #bloodglas
+│• #hallowen
+│• #darkgold
+│• #wicker
+│• #firework
+│• #skeleton
+│• #sand
+│• #glue
+│• #1917
+│• #leaves
+│• #shadow
+│• #romantic
+│• #smoke
+│• #burnpapper
+│• #naruto
+│• #lovemsg
+│• #grassmsg
+│• #lovetext
+│• #coffecup
+│• #butterfly
+│• #retrolol
+│• #pubg
+╰─────────❍
+
+╭────✎「 *Photo Oxy* 」
+│• #shadow
+│• #romantic
+│• #smoke
+│• #burnpapper
+│• #naruto
+│• #lovemsg
+│• #grassmsg
+│• #lovetext
+│• #coffecup
+│• #butterfly
+│• #retrolol
+╰─────────❍
+`
+}
+
+break
         case 'menu': {
+   let quotes = JSON.parse(fs.readFileSync('./storage/quotes/quotes.json'))
+                let anu = await quotes
+                result = anu[Math.floor(Math.random() * anu.length)]
             let ownernya = ownernomer + '@s.whatsapp.net'
             let me = m.sender
+           
             let ments = [ownernya, me, ini_mark]
-                anu = `*${ucapanWaktu}* kak @${me.split('@')[0]}\n*Powered*  : @${ini_mark.split('@')[0]}\n*Creator* : @${ownernya.split('@')[0]}
-*Group Menu*
-• ${prefix}linkgroup
-• ${prefix}ephemeral [option]
-• ${prefix}setppgc [image]
-• ${prefix}setname [text]
-• ${prefix}setdesc [text]
-• ${prefix}group [option]
-• ${prefix}editinfo [option]
-• ${prefix}add @user
-• ${prefix}kick @user
-• ${prefix}hidetag [text]
-• ${prefix}tagall [text]
-• ${prefix}antilink [on/off]
-• ${prefix}mute [on/off]
-• ${prefix}promote @user
-• ${prefix}demote @user
-• ${prefix}vote [text]
-• ${prefix}devote
-• ${prefix}upvote
-• ${prefix}cekvote
-• ${prefix}hapusvote
-──────────────•
-*Downloader Menu*
-• ${prefix}tiktoknowm [url]
-• ${prefix}tiktokwm [url]
-• ${prefix}tiktokmp3 [url]
-• ${prefix}instagram [url]
-• ${prefix}twitter [url]
-• ${prefix}twittermp3 [url]
-• ${prefix}facebook [url]
-• ${prefix}pinterestdl [url]
-• ${prefix}ytmp3 [url]
-• ${prefix}ytmp4 [url]
-──────────────•
-*Search Menu*
-• ${prefix}play [query]
-• ${prefix}yts [query]
-• ${prefix}gimage [query]
-• ${prefix}pinterest [query]
-• ${prefix}wallpaper [query]
-• ${prefix}wikimedia [query]
-• ${prefix}ytsearch [query]
-• ${prefix}ringtone [query]
-• ${prefix}stalk [option] [query]
-──────────────•
-*Random Menu*
-• ${prefix}Masha
-• ${prefix}coffee
-• ${prefix}quotesanime
-• ${prefix}motivasi
-• ${prefix}dilanquote
-• ${prefix}bucinquote
-• ${prefix}katasenja
-• ${prefix}puisi
-• ${prefix}couple
-• ${prefix}anime
-• ${prefix}waifu
-──────────────•
-*Text Pro Menu*
-• ${prefix}3dbox
-• ${prefix}3ddeepsea
-• ${prefix}drapwater
-• ${prefix}lion2
-• ${prefix}americanflag
-• ${prefix}papercut
-• ${prefix}transformer
-• ${prefix}herryp
-• ${prefix}neondevil
-• ${prefix}3dstone
-• ${prefix}3davengers
-• 
-• ${prefix}window
-• ${prefix}graffiti
-• ${prefix}pornhub
-• ${prefix}blackping
-• ${prefix}glitch
-• ${prefix}glitch2
-• ${prefix}glitch3
-• ${prefix}3dspace
-• ${prefix}lion
-• ${prefix}3dneon
-• ${prefix}neon
-• ${prefix}greenneon
-• ${prefix}bokeh
-• ${prefix}hollographic
-• ${prefix}bear
-• ${prefix}wolf
-• ${prefix}joker
-• ${prefix}dropwater
-• ${prefix}neonlight
-• ${prefix}natural
-• ${prefix}carbon
-• ${prefix}pencil
-• ${prefix}candy
-• ${prefix}christmas
-• ${prefix}3dchristmas
-• ${prefix}sparklechristmas
-• ${prefix}deepsea
-• ${prefix}scifi
-• ${prefix}rainbow
-• ${prefix}waterpipe
-• ${prefix}spooky
-• ${prefix}circuit
-• ${prefix}discovery
-• ${prefix}metalic
-• ${prefix}fiction
-• ${prefix}demon
-• ${prefix}berry
-• ${prefix}thunder
-• ${prefix}magma
-• ${prefix}glitch
-• ${prefix}harrypotter
-• ${prefix}brokenglass
-• ${prefix}papercut
-• ${prefix}watercolor
-• ${prefix}multicolor
-• ${prefix}neondevil
-• ${prefix}underwater
-• ${prefix}graffitibike
-• ${prefix}snow
-• ${prefix}cloud
-• ${prefix}honey
-• ${prefix}ice
-• ${prefix}fruitjuice
-• ${prefix}biscuit
-• ${prefix}wood
-• ${prefix}chocolate
-• ${prefix}strawberry
-• ${prefix}matrix
-• ${prefix}blood
-• ${prefix}toxic
-• ${prefix}lava
-• ${prefix}rock
-• ${prefix}bloodglas
-• ${prefix}hallowen
-• ${prefix}darkgold
-• ${prefix}wicker
-• ${prefix}firework
-• ${prefix}skeleton
-• ${prefix}sand
-• ${prefix}glue
-• ${prefix}1917
-• ${prefix}leaves
-• ${prefix}shadow
-• ${prefix}romantic
-• ${prefix}smoke
-• ${prefix}burnpapper
-• ${prefix}naruto
-• ${prefix}lovemsg
-• ${prefix}grassmsg
-• ${prefix}lovetext
-• ${prefix}coffecup
-• ${prefix}butterfly
-• ${prefix}retrolol
-• ${prefix}pubg
+                anu =  
+                
+       
+            
+`                   *${ucapanWaktu}* 
+     _"${result.quotes}_
 
-──────────────•
-*Photo Oxy Menu*
-• ${prefix}shadow
-• ${prefix}romantic
-• ${prefix}smoke
-• ${prefix}burnpapper
-• ${prefix}naruto
-• ${prefix}lovemsg
-• ${prefix}grassmsg
-• ${prefix}lovetext
-• ${prefix}coffecup
-• ${prefix}butterfly
-• ${prefix}harrypotter
-• ${prefix}retrolol
-──────────────•
-*Fun Menu*
-• ${prefix}simih
-• ${prefix}halah
-• ${prefix}hilih
-• ${prefix}huluh
-• ${prefix}heleh
-• ${prefix}holoh
-• ${prefix}jadian
-• ${prefix}jodohku
-• ${prefix}delttt
-• ${prefix}tictactoe
-• ${prefix}family100
-• ${prefix}tebak [option]
-• ${prefix}math [mode]
-• ${prefix}suitpvp [@tag]
-──────────────•
-*Primbon Menu*
-• ${prefix}nomorhoki
-• ${prefix}artimimpi
-• ${prefix}artinama
-• ${prefix}ramaljodoh
-• ${prefix}ramaljodohbali
-• ${prefix}suamiistri
-• ${prefix}ramalcinta
-• ${prefix}cocoknama
-• ${prefix}pasangan
-• ${prefix}jadiannikah
-• ${prefix}sifatusaha
-• ${prefix}rezeki
-• ${prefix}pekerjaan
-• ${prefix}nasib
-• ${prefix}penyakit
-• ${prefix}tarot
-• ${prefix}fengshui
-• ${prefix}haribaik
-• ${prefix}harisangar
-• ${prefix}harisial
-• ${prefix}nagahari
-• ${prefix}arahrezeki
-• ${prefix}peruntungan
-• ${prefix}weton
-• ${prefix}karakter
-• ${prefix}keberuntungan
-• ${prefix}memancing
-• ${prefix}masasubur
-• ${prefix}zodiak
-──────────────•
-*Convert Menu*
-• ${prefix}toimage
-• ${prefix}sticker
-• ${prefix}emojimix
-• ${prefix}emojimix2
-• ${prefix}tovideo
-• ${prefix}togif
-• ${prefix}tourl
-• ${prefix}tovn
-• ${prefix}tomp3
-• ${prefix}toaudio
-• ${prefix}ebinary
-• ${prefix}dbinary
-• ${prefix}styletext
-• ${prefix}smeme
-──────────────•
-*Main Menu*
-• ${prefix}ping
-• ${prefix}owner
-• ${prefix}menu
-• ${prefix}delete
-• ${prefix}listpc
-• ${prefix}listgc
-• ${prefix}listonline
-• ${prefix}speedtest
-──────────────•
-*Database Menu*
-• ${prefix}setcmd
-• ${prefix}listcmd
-• ${prefix}delcmd
-• ${prefix}lockcmd
-• ${prefix}addmsg
-• ${prefix}listmsg
-• ${prefix}getmsg
-• ${prefix}delmsg
-──────────────•
-*Anonymous Menu*
-• ${prefix}anonymous
-• ${prefix}start
-• ${prefix}next
-• ${prefix}keluar
-──────────────•
-*Islamic Menu*
-• ${prefix}kisahnabi
-• ${prefix}jadwalsholat
-• ${prefix}niatsholat
-• ${prefix}ceramah
-• ${prefix}asmaulhusna
-──────────────•
-*Voice Changer*
-• ${prefix}bass
-• ${prefix}blown
-• ${prefix}deep
-• ${prefix}earrape
-• ${prefix}fast
-• ${prefix}fat
-• ${prefix}nightcore
-• ${prefix}reverse
-• ${prefix}robot
-• ${prefix}slow
-• ${prefix}tupai
-──────────────•
- *Owner Menu* 
-• ${prefix}react [emoji]
-• ${prefix}chat [option]
-• ${prefix}join [link]
-• ${prefix}leave
-• ${prefix}block @user
-• ${prefix}unblock @user
-• ${prefix}bcgroup [text]
-• ${prefix}bcall [text]
-• ${prefix}setppbot [image]
-• ${prefix}setexif
-• ${prefix}setmenu [option]
-──────────────•`
+╭────✎「 {Marsha-Bot} 
+│• Hari: ${harii}
+│• Tanggal: ${hariini}
+│• Waktu: ${jam}WIB
+╰─────────❍
 
+╭────✎「 {Creator Info} 
+│•Creator: Kreyuk
+│•Channel: http://bit.ly/3CevJq6
+│•Subcribe Ya😉
+│•Request Fitur/lapor: #hapusvote
+╰─────────❍
+
+╭────✎「 *User Info* 」
+│• Name: @${me.split('@')[0]}
+╰─────────❍
+
+╭────✎「 Anonymous 」
+│• #anonymous
+│• #start
+│• #next
+│• #keluar
+╰─────────❍
+
+╭────✎「 Download 」
+│• #tiktoknowm [url]
+│• #tiktokwm [url]
+│• #tiktokmp3 [url]
+│• #instagram [url]
+│• #twitter [url]
+│• #twittermp3 [url]
+│• #facebook [url]
+│• #ytmp3 [url]
+│• #ytmp4 [url]
+╰─────────❍
+
+╭────✎「 Sticker 」
+│• #toimage
+│• #sticker
+│• #emojimix
+│• #emojimix2
+│• #tovideo
+│• #togif
+│• #smeme
+╰─────────❍
+
+╭────✎「 Group 」
+│• #linkgroup
+│• #ephemeral [option]
+│• #setppgc [image]
+│• #setname [text]
+│• #setdesc [text]
+│• #group [option]
+│• #editinfo [option]
+│• #add @user
+│• #kick @user
+│• #hidetag [text]
+│• #tagall [text]
+│• #antilink [on/off]
+│• #mute [on/off]
+│• #promote @user
+│• #demote @user
+│• #vote [text]
+│• #devote
+│• #upvote
+│• #cekvote
+│• #hapusvote
+╰─────────❍
+
+╭────✎「 Owner 」
+│• #react [emoji]
+│• #chat [option]
+│• #join [link]
+│• #leave
+│• #block @user
+│• #unblock @user
+│• #bcgroup [text]
+│• #bcall [text]
+│• #setppbot [image]
+│• #setexif
+│• #setmenu [option]
+╰─────────❍
+
+╭────✎「 Game 」
+│• #simih
+│• #halah
+│• #hilih
+│• #huluh
+│• #heleh
+│• #holoh
+│• #jadian
+│• #jodohku
+│• #delttt
+│• #tictactoe
+│• #family100
+│• #tebak [option]
+│• #math [mode]
+│• #suitpvp [@tag]
+╰─────────❍
+
+╭────✎「 Textpro 」
+│• #textmenu
+╰─────────❍
+
+╭────✎「 Random 」
+│• #kisahnabi
+│• #jadwalsholat
+│• #niatsholat
+│• #ceramah
+│• #asmaulhusna
+╰─────────❍
+
+╭────✎「 Random 」
+│• #setcmd
+│• #listcmd
+│• #delcmd
+│• #lockcmd
+│• #addmsg
+│• #listmsg
+│• #getmsg
+│• #delmsg
+╰─────────❍
+
+╭────✎「 Info 」
+│• #ping
+│• #owner
+│• #menu
+│• #delete
+│• #listpc
+│• #listgc
+│• #listonline
+╰─────────❍
+
+╭────✎「 Voicechanger 」
+│• #bass
+│• #blown
+│• #deep
+│• #earrape
+│• #fast
+│• #fat
+│• #nightcore
+│• #reverse
+│• #robot
+│• #slow
+│• #tupai
+╰─────────❍
+
+╭────✎「 Convert 」
+│• #tourl
+│• #tovn
+│• #tomp3
+│• #toaudio
+│• #ebinary
+│• #dbinary
+│• #styletext
+╰─────────❍
+
+╭────✎「 Search 」
+│• #play [query]
+│• #yts [query]
+│• #gimage [query]
+│• #pinterest [query]
+│• #wallpaper [query]
+│• #wikimedia [query]
+│• #ytsearch [query]
+│• #ringtone [query]
+│• #stalk [option] [query]
+╰─────────❍
+
+╭────✎「 Primbon 」
+│• #nomorhoki
+│• #artimimpi
+│• #artinama
+│• #ramaljodoh
+│• #ramaljodohbali
+│• #suamiistri
+│• #ramalcinta
+│• #cocoknama
+│• #pasangan
+│• #jadiannikah
+│• #sifatusaha
+│• #rezeki
+│• #pekerjaan
+│• #nasib
+│• #penyakit
+│• #tarot
+│• #fengshui
+│• #haribaik
+│• #harisangar
+│• #harisial
+│• #nagahari
+│• #arahrezeki
+│• #peruntungan
+│• #weton
+│• #karakter
+│• #keberuntungan
+│• #memancing
+│• #masasubur
+│• #zodiak
+╰─────────❍
+
+╭────✎「 Random 」
+│• #masha
+│• #coffee
+│• #quotesanime
+│• #motivasi
+│• #dilanquote
+│• #bucinquote
+│• #katasenja
+│• #puisi
+│• #couple
+│• #anime
+│• #waifu
+╰─────────❍`
                 let buttons = [{ buttonId: 'DONASI', buttonText: { displayText: '🙏DONASI' }, type: 1 },{ buttonId: 'rules', buttonText: { displayText: '❗Rules' }, type: 1 }]
             await kreyuk.sendButtonText(m.chat, buttons, anu, nyoutube, m, {mentions: ments})
             }
